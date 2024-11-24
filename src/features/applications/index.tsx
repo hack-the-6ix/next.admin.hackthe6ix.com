@@ -86,25 +86,11 @@ const applicants = [
 ];
 export function Component() {
   const [data, setData] = useState<ApplicantsResponse | null>(null);
-  const [advanced, setAdvanced] = useState(false);
   const listRef = React.createRef<List>();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getApplicants();
-        setData(response.message);
-      } catch (error) {
-        console.error('Failed to fetch statistics:', error);
-      }
-    };
-    void fetchData();
-    console.log(data);
-  }, []);
 
   return (
     <div className="p-4 m-3">
-      <ApplicationHeader listRef={listRef}/>
+      <ApplicationHeader listRef={listRef} />
       <div className="flex justify-center">
         <List
           ref={listRef}
