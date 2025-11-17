@@ -25,6 +25,17 @@ const ApplicationHeader = ({
     setSearchParams(params);
   };
 
+  const handleStatusFilter = (status: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (status && status !== 'all') {
+      params.set('status', status);
+    } else {
+      params.delete('status');
+    }
+    params.delete('page'); // Reset to first page when filtering
+    setSearchParams(params);
+  };
+
   const toggleReviewModal = () => {
     setReviewModal(!reviewModal);
   };
@@ -105,41 +116,59 @@ const ApplicationHeader = ({
         </div>
       </div>
       <div className="w-full pb-4">
-        <div className="relative">
-          <input
-            className="w-full bg-white dark:bg-slate-700 placeholder:text-slate-500 text-slate-900 dark:text-slate-100 text-sm border border-slate-900 rounded-xl pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-primary  shadow-sm focus:shadow dark:border-slate-500 dark:focus:border-white"
-            placeholder="Search for an applicant with name or id..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSearch();
-              }
-            }}
-            disabled={isRanked}
-          />
-          <button
-            className="absolute top-1 right-1 flex items-center rounded-xl bg-primary dark:bg-primary-dark dark:hover:bg-primary py-1 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:shadow-none active:bg-slate-700 hover:bg-primary-dark active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            type="button"
-            onClick={handleSearch}
+        <div className="flex gap-3 items-center">
+          <div className="relative flex-1">
+            <input
+              className="w-full bg-white dark:bg-slate-700 placeholder:text-slate-500 text-slate-900 dark:text-slate-100 text-sm border border-slate-900 rounded-xl pl-3 pr-28 py-2 transition duration-300 ease focus:outline-none focus:border-primary  shadow-sm focus:shadow dark:border-slate-500 dark:focus:border-white"
+              placeholder="Search for an applicant with name or id..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+              disabled={isRanked}
+            />
+            <button
+              className="absolute top-1 right-1 flex items-center rounded-xl bg-primary dark:bg-primary-dark dark:hover:bg-primary py-1 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:shadow-none active:bg-slate-700 hover:bg-primary-dark active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              type="button"
+              onClick={handleSearch}
+              disabled={isRanked}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-4 h-4 mr-2"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Search
+            </button>
+          </div>
+          <select
+            className="bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm border border-slate-900 rounded-xl px-4 py-2 transition duration-300 ease focus:outline-none focus:border-primary shadow-sm focus:shadow dark:border-slate-500 dark:focus:border-white"
+            value={searchParams.get('status') ?? 'all'}
+            onChange={(e) => handleStatusFilter(e.target.value)}
             disabled={isRanked}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-4 h-4 mr-2"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Search
-          </button>
+            <option value="all">All Statuses</option>
+            <option value="applied">Applied</option>
+            <option value="accepted">Accepted</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="checked in">Checked In</option>
+            <option value="waitlisted">Waitlisted</option>
+            <option value="rejected">Rejected</option>
+            <option value="declined">Declined</option>
+            <option value="expired">Expired</option>
+          </select>
         </div>
       </div>
       <ReviewModal isOpen={reviewModal} onClose={toggleReviewModal} />
