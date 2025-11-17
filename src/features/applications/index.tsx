@@ -14,31 +14,35 @@ import Button from '@/components/button';
 // Helper function to get status chip colors - each status gets a unique color
 const getStatusChipClasses = (status: string): string => {
   const statusLower = status.toLowerCase().trim();
-  
+
   // Map each individual status to a unique color
   const statusColorMap: Record<string, string> = {
-    'accepted': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    'confirmed': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
-    'checked in': 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
-    'rejected': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    'declined': 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200',
-    'waitlisted': 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-    'applied': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    'expired': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+    accepted:
+      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    confirmed:
+      'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+    'checked in':
+      'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
+    rejected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    declined: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200',
+    waitlisted:
+      'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+    applied: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    expired: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
   };
-  
+
   // Try exact match first
   if (statusColorMap[statusLower]) {
     return statusColorMap[statusLower];
   }
-  
+
   // Try partial matches for variations
   for (const [key, color] of Object.entries(statusColorMap)) {
     if (statusLower.includes(key)) {
       return color;
     }
   }
-  
+
   // Default - Neutral gray for unknown statuses
   return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
 };
@@ -72,9 +76,7 @@ const columns = new Map<
     'Final Rating',
     [
       (user) => {
-        return user.internal.computedFinalApplicationScore ?
-            user.internal.computedFinalApplicationScore
-          : 'No Rank';
+        return user.internal.computedFinalApplicationScore ?? 'No Rank';
       },
       'internal.computedFinalApplicationScore',
       'w-[200px]',
@@ -121,13 +123,13 @@ export async function clientLoader({ request }: { request: Request }) {
     // Each status should exclude higher-level statuses
     // Use $ne: true instead of false to match both false and undefined/null values
     const statusBooleanMap: Record<string, Record<string, unknown>> = {
-      'applied': {
+      applied: {
         'status.applied': true,
         'status.accepted': { $ne: true },
         'status.rejected': { $ne: true },
         'status.waitlisted': { $ne: true },
       },
-      'accepted': {
+      accepted: {
         'status.accepted': true,
         'status.rejected': { $ne: true },
         'status.waitlisted': { $ne: true },
@@ -135,32 +137,32 @@ export async function clientLoader({ request }: { request: Request }) {
         'status.declined': { $ne: true },
         'status.checkedIn': { $ne: true },
       },
-      'rejected': {
+      rejected: {
         'status.rejected': true,
         'status.accepted': { $ne: true },
       },
-      'waitlisted': {
+      waitlisted: {
         'status.waitlisted': true,
         'status.accepted': { $ne: true },
         // Note: waitlisted people might also be marked as rejected, so don't exclude it
       },
-      'confirmed': {
+      confirmed: {
         'status.confirmed': true,
         'status.declined': { $ne: true },
         'status.checkedIn': { $ne: true },
       },
-      'declined': {
+      declined: {
         'status.declined': true,
         'status.confirmed': { $ne: true },
       },
       'checked in': {
         'status.checkedIn': true,
       },
-      'expired': {
+      expired: {
         $or: [
           { 'status.rsvpExpired': true },
-          { 'status.applicationExpired': true }
-        ]
+          { 'status.applicationExpired': true },
+        ],
       },
     };
 
@@ -174,8 +176,15 @@ export async function clientLoader({ request }: { request: Request }) {
   }
 
   const applicantsData = await (isRanked === 'false' ?
-    getUser(page, size, sortCriteria as 'asc' | 'desc', sortField, search, baseFilter)
-  : getRankedUser());
+    getUser(
+      page,
+      size,
+      sortCriteria as 'asc' | 'desc',
+      sortField,
+      search,
+      baseFilter,
+    ) :
+    getRankedUser());
 
   // Calculate total pages based on results
   // When filtering, if we get fewer results than page size, we're on the last page

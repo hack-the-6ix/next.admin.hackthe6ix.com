@@ -156,7 +156,9 @@ const ApplicationHeader = ({
           <select
             className="bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 text-sm border border-slate-900 rounded-xl px-4 py-2 transition duration-300 ease focus:outline-none focus:border-primary shadow-sm focus:shadow dark:border-slate-500 dark:focus:border-white"
             value={searchParams.get('status') ?? 'all'}
-            onChange={(e) => handleStatusFilter(e.target.value)}
+            onChange={(e) => {
+              handleStatusFilter(e.target.value);
+            }}
             disabled={isRanked}
           >
             <option value="all">All Statuses</option>
