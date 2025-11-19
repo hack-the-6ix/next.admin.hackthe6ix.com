@@ -281,9 +281,11 @@ export async function getUser(
 
       return { $or: orConditions };
     });
+    // Merge existing $and conditions with search conditions
+    const existingAnd = (body.filter as Record<string, unknown>).$and as Record<string, unknown>[] | undefined;
     body.filter = {
       ...(body.filter as Record<string, unknown>),
-      $and: regexConditions,
+      $and: existingAnd ? [...existingAnd, ...regexConditions] : regexConditions,
     };
   }
 
