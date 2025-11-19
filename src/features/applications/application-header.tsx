@@ -29,6 +29,7 @@ const ApplicationHeader = ({
     setReviewModal(!reviewModal);
   };
 
+  // function for scrolling to bottom onf table
   const scrollToBottom = () => {
     console.log(document.body.scrollHeight);
     document.querySelector('#bottom')?.scrollIntoView();
